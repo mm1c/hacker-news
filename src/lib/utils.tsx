@@ -36,7 +36,7 @@ export const constructItemIdSlices = (itemIds: number[]) => {
  * github.com/abc => github.com
  */
 export const getHost = (url: string | undefined) => {
-  if(!url) return '';
+  if (!url) return '';
 
   try {
     const urlObject = new URL(url);
@@ -56,7 +56,7 @@ const getRoundedTimeelapsed = (timeElapsed: number, divider: number) => {
 }
 
 export const getAgo = (time: number | undefined) => {
-  if(!time) return '';
+  if (!time) return '';
 
   const secsElapsed = Date.now() / 1000 - time;
 

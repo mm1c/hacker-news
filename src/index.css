@@ -124,6 +124,12 @@ main {
   padding: 10px 5px;
 }
 
+.error-message {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 article {
   position: relative;
   display: flex;

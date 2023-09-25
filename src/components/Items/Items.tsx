@@ -7,6 +7,8 @@ import { AppContext } from '../../contexts/AppContext';
 import { IHackerNewsItem, IItemsProps, IItemsViewData } from '../../types/interfaces';
 import Pagination from '../Pagination/Pagination';
 
+const DEFAULT_ERROR_MSG = 'Could not load items...';
+
 const Items = (props: IItemsProps) => {
   const { endpoint } = props;
 
@@ -18,6 +20,7 @@ const Items = (props: IItemsProps) => {
   } = useContext(AppContext);
 
   const [isSliceLoading, setIsSliceLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemIdSlices, setItemIdSlices] = useState<number[][]>([]);
   const [itemSlices, setItemSlices] = useState<IHackerNewsItem[][]>([]);
@@ -29,13 +32,18 @@ const Items = (props: IItemsProps) => {
   });
 
   const getItemSlice = useCallback(async (ids: number[]) => {
-    setIsSliceLoading(true);
+    try {
+      setIsSliceLoading(true);
 
-    const items = getAllItemResults(ids.map(id => getItem(id)));
+      const items = getAllItemResults(ids.map(id => getItem(id)));
 
-    setIsSliceLoading(false);
+      setIsSliceLoading(false);
 
-    return items;
+      return items;
+    } catch(err) {
+      setErrorMessage(DEFAULT_ERROR_MSG);
+      return [];
+    }
   }, []);
 
   const getDataForView = useCallback((itemSlicesArr: IHackerNewsItem[][], pageNumber: number) => {
@@ -87,7 +95,12 @@ const Items = (props: IItemsProps) => {
     setIsInitialDataLoading(true);
 
     // get item IDs
-    const ids = await getItemIds(endpoint);
+    let ids: number[] = [];
+    try {
+      ids = await getItemIds(endpoint);
+    } catch(err) {
+      setErrorMessage(DEFAULT_ERROR_MSG);
+    }
 
     // split item IDs into 30 item slices
     const slices = constructItemIdSlices(ids);
@@ -149,10 +162,16 @@ const Items = (props: IItemsProps) => {
 
         {/* LOADING SPINNER */}
         {
-          !isInitialDataLoading || currentItems.length > 0 ? null : (
+          !isInitialDataLoading || currentItems.length > 0 || errorMessage !== '' ? null : (
             <div className="spinner">
               <PacmanLoader color="#649568" />
             </div>
+          )
+        }
+
+        {
+          errorMessage === '' ? null : (
+            <div className="error-message">{errorMessage}</div>
           )
         }
 
