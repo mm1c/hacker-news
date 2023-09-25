@@ -247,6 +247,7 @@ article:not(:first-child) {
   color: whitesmoke;
   margin-right: 3px;
   margin-bottom: 3px;
+  cursor: pointer;
 }
 
 .pagination__wrapper {
